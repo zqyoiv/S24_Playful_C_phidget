@@ -80,6 +80,7 @@ function setupPhidgets() {
   function onDetach(ch) {
     console.log(ch.hubPort + " detached");
   }
+
   function onAttach0(ch) {
     hubPort = 0;
     console.log(ch + ' attached');
@@ -221,7 +222,7 @@ function posChange1(posChange, timeChange, indexTriggered) {
   }
   encoderPosition = absolutePosition;
 
-  let new_freq2 = map(encoderPosition, 0, STEPS_PER_REVOLUTION, 20, 40);
+  let new_freq2 = map(encoderPosition, 0, STEPS_PER_REVOLUTION, 30, 40);
   if (new_freq2 != freq2 && fidgetInit1) {
     console.log("1 Frequency updated to: " + new_freq2);
     sendPhidgetNumberToOsc(hubPort, encoderPosition);
@@ -272,7 +273,7 @@ function posChange2(posChange, timeChange, indexTriggered) {
   }
   encoderPosition = absolutePosition;
 
-  let new_freq3 = map(encoderPosition, 0, STEPS_PER_REVOLUTION, 50, 80);
+  let new_freq3 = map(encoderPosition, 0, STEPS_PER_REVOLUTION, 60, 70);
 
   if (new_freq3 != freq3 && fidgetInit2) {
     console.log("2 Frequency updated to: " + new_freq3);
