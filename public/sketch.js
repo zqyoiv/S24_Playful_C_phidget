@@ -64,9 +64,7 @@ function setup() {
   strokeColor2 = normalStroke;
   strokeColor3 = normalStroke;
 
-  setupPhidgets(0);
-  setupPhidgets(1);
-  setupPhidgets(2);
+  setupPhidgets();
 
   animeTransit.onended(endAnimation);
 }
@@ -112,9 +110,6 @@ function draw() {
 function drawBrainWave() {
   background(0,0,0,20); 
   fill(0, 0, 0, 0);    // 设置半透明的白色填充
-  // freq1 = freqSlider1.value();
-  // freq2 = freqSlider2.value();
-  // freq3 = freqSlider3.value();
   timeParam = millis() / 1000 % 60;
 
   // Level 1 wave
@@ -131,7 +126,7 @@ function drawBrainWave() {
   // Level 2 wave
   beginShape();
   stroke(strokeColor2);
-  strokeWeight(strokeColor2 === activeStroke2 ? 4 : 2);
+  strokeWeight(strokeColor2 === activeStroke1 ? 4 : 2);
   for (let x = 0; x < width; x++) {
     angle = map(x, 0, width, 0, TWO_PI);
     maxY = abs(sin(angle * freq1 + timeParam * speed1) - 1);
@@ -143,7 +138,7 @@ function drawBrainWave() {
   // Level 3 wave
   beginShape();
   stroke(strokeColor3);
-  strokeWeight(strokeColor3 === activeStroke3 ? 4 : 2);
+  strokeWeight(strokeColor3 === activeStroke1 ? 4 : 2);
   for (let x = 0; x < width; x++) {
     angle = map(x, 0, width, 0, TWO_PI);
     maxY = max(abs(sin(angle * freq1 + timeParam * speed1) - 1),
@@ -159,78 +154,14 @@ function drawBrainWave() {
 function setUpFrequencySliders() {
   freqSlider1 = createSlider(1, 2.5, 1.5, 0.5);
   freqSlider1.position(10, 100);
-  freqSlider1.mousePressed(() => handleSliderPress(1, [sound1], true));
+  freqSlider1.mousePressed(() => handleFreqChange(1, [sound1], true));
 
   freqSlider2 = createSlider(20, 40, 30, 5);
   freqSlider2.position(10, 120);
-  freqSlider2.mousePressed(() => handleSliderPress(2, [sound2], false));
+  freqSlider2.mousePressed(() => handleFreqChange(2, [sound2], false));
 
   freqSlider3 = createSlider(50, 80, 60, 5);
   freqSlider3.position(10, 140);
-  freqSlider3.mousePressed(() => handleSliderPress(3, [sound3], false));
+  freqSlider3.mousePressed(() => handleFreqChange(3, [sound3], false));
 }
 
-function handleSliderPress(sliderNum, sounds, affectAll) {
-  // Play the corresponding sound
-  if (sounds[0] && !sounds[0].isPlaying()) {
-    sounds[0].loop();
-  }
-
-  // Only change the stroke color of the current slider number
-  setStrokeColor(sliderNum, getActiveStroke(sliderNum), false);
-
-  // Set up sounds and delay for activating strokes
-  sounds.forEach((sound, index) => {
-    if (index > 0) {
-      setTimeout(() => {
-        if (!sounds[index].isPlaying()) {
-          sounds[index].loop();
-        }
-        if (!affectAll) {
-          setStrokeColor(sliderNum + index, getActiveStroke(sliderNum + index), false);
-        }
-      }, index * 200); // 200ms delay between activating strokes
-    }
-  });
-}
-
-function mouseReleased() {
-  // Stop all sounds and reset stroke colors when mouse is released
-  [sound1, sound2, sound3].forEach((sound, index) => {
-    if (sound.isPlaying()) {
-      sound.stop();
-    }
-    setStrokeColor(index + 1, normalStroke, false);
-  });
-}
-
-function setStrokeColor(sliderNum, color, affectAll) {
-  if (affectAll) {
-    strokeColor1 = color; // Set first wave color for first slider
-  } else {
-    switch (sliderNum) {
-      case 1:
-        strokeColor1 = color;
-        break;
-      case 2:
-        strokeColor2 = color;
-        break;
-      case 3:
-        strokeColor3 = color;
-        break;
-    }
-  }
-}
-
-function getActiveStroke(sliderNum) {
-  switch (sliderNum) {
-    case 1:
-      return activeStroke1;
-    case 2:
-      return activeStroke2;
-    case 3:
-      return activeStroke3;
-    default:
-      return normalStroke;
-  }
-}

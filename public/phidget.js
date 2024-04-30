@@ -6,27 +6,54 @@ let encoderPosition = 0;
 let encoderTimeChange = 0;
 let encoderIndexTriggered = false;
 
-let fidgetInit = false;
+let fidgetInit0 = false;
+let fidgetInit1 = false;
+let fidgetInit2 = false;
 let freq1 = 2;
 let freq2 = 30;
 let freq3 = 60;
 
-function setupPhidgets(hubPort) {
+// ##################################################
+// ##############    connection    ##################
+// ##################################################
+
+function setupPhidgets() {
     var conn = new phidget22.Connection(8989, 'localhost');
-    var ch = new phidget22.Encoder();
-    ch.hubPort = hubPort;
+    var ch1 = new phidget22.Encoder();
+    ch1.hubPort = 0;
+    var ch2 = new phidget22.Encoder();
+    ch2.hubPort = 1;
+    var ch3 = new phidget22.Encoder();
+    ch3.hubPort = 2;
 
-    ch.onError = onError;
-    // ch.onPropertyChange = propChange;
-    ch.onAttach = onAttach;
+    ch1.onError = onError;
+    ch1.onAttach = onAttach;
+    ch2.onError = onError;
+    ch2.onAttach = onAttach;
+    ch3.onError = onError;
+    ch3.onAttach = onAttach;
 
-   // Set Data Interval in; // Set to 100ms for example
-   // Set Change Trigger (the minimum change in position to report)
-   ch.setPositionChangeTrigger(600); // Set to 1 pulse for example
+    // Set Data Interval in; // Set to 100ms for example
+    // Set Change Trigger (the minimum change in position to report)
+    ch1.setPositionChangeTrigger(600); // Set to 1 pulse for example
+    ch2.setPositionChangeTrigger(600);
+    ch3.setPositionChangeTrigger(600);
 
     conn.connect().then(function () {
       console.log('connected');
-      ch.open().then(function (ch) {
+      ch1.open().then(function (ch) {
+        console.log('channel open');
+      }).catch(function (err) {
+        console.log('failed to open the channel:' + err);
+      });
+
+      ch2.open().then(function (ch) {
+        console.log('channel open');
+      }).catch(function (err) {
+        console.log('failed to open the channel:' + err);
+      });
+
+      ch3.open().then(function (ch) {
         console.log('channel open');
       }).catch(function (err) {
         console.log('failed to open the channel:' + err);
@@ -87,14 +114,14 @@ function posChange0(posChange, timeChange, indexTriggered) {
 
   let new_freq1 = map(encoderPosition, 0, STEPS_PER_REVOLUTION, 0.5, 4);
 
-  if (new_freq1 != freq1 && fidgetInit) {
+  if (new_freq1 != freq1 && fidgetInit0) {
     console.log("0 Frequency updated to: " + new_freq1);
     sendPhidgetNumberToOsc(hubPort, encoderPosition);
     reset_color0 = false;
     if (timerId) {
       clearTimeout(timerId);
     }
-    handleSliderPress(1, [], true);
+    handleFreqChange(0, [], false);
 
     if (playStartAnimation) {
         playTransitAnimation = true;
@@ -103,16 +130,16 @@ function posChange0(posChange, timeChange, indexTriggered) {
 
     freq1 = new_freq1;
     phidget_rest_timer = millis();
-  } else if (new_freq1 == freq1 && fidgetInit) {
+  } else if (new_freq1 == freq1 && fidgetInit0) {
     if (!reset_color0) {
       timerId = setTimeout(() => {
-        mouseReleased();
+        freqChangePaused(0);
         reset_color0 = true;
         // console.log("------ reset color ------", reset_color);
       }, 1000);
     }
-  } else if (!fidgetInit) {
-    fidgetInit = true;
+  } else if (!fidgetInit0) {
+    fidgetInit0 = true;
     freq1 = new_freq1;
   }
   // positionChange(0, posChange, timeChange, indexTriggered);
@@ -138,14 +165,14 @@ function posChange1(posChange, timeChange, indexTriggered) {
   encoderPosition = absolutePosition;
 
   let new_freq2 = map(encoderPosition, 0, STEPS_PER_REVOLUTION, 20, 40);
-  if (new_freq2 != freq2 && fidgetInit) {
+  if (new_freq2 != freq2 && fidgetInit1) {
     console.log("1 Frequency updated to: " + new_freq2);
     sendPhidgetNumberToOsc(hubPort, encoderPosition);
     reset_color1 = false;
     if (timerId) {
       clearTimeout(timerId);
     }
-    handleSliderPress(1, [], true);
+    handleFreqChange(1, [], false);
 
     if (playStartAnimation) {
         playTransitAnimation = true;
@@ -154,16 +181,16 @@ function posChange1(posChange, timeChange, indexTriggered) {
 
     freq2 = new_freq2;
     phidget_rest_timer = millis();
-  } else if (new_freq2 == freq2 && fidgetInit) {
+  } else if (new_freq2 == freq2 && fidgetInit1) {
     if (!reset_color1) {
       timerId = setTimeout(() => {
-        mouseReleased();
+        freqChangePaused(1);
         reset_color1 = true;
         // console.log("------ reset color ------", reset_color);
       }, 1000);
     }
-  } else if (!fidgetInit) {
-    fidgetInit = true;
+  } else if (!fidgetInit1) {
+    fidgetInit1 = true;
     freq2 = new_freq2;
   }
   // positionChange(1, posChange, timeChange, indexTriggered);
@@ -190,14 +217,14 @@ function posChange2(posChange, timeChange, indexTriggered) {
 
   let new_freq3 = map(encoderPosition, 0, STEPS_PER_REVOLUTION, 50, 80);
 
-  if (new_freq3 != freq3 && fidgetInit) {
+  if (new_freq3 != freq3 && fidgetInit2) {
     console.log("2 Frequency updated to: " + new_freq3);
     sendPhidgetNumberToOsc(hubPort, encoderPosition);
     reset_color2 = false;
     if (timerId) {
       clearTimeout(timerId);
     }
-    handleSliderPress(1, [], true);
+    handleFreqChange(2, [], false);
 
     if (playStartAnimation) {
         playTransitAnimation = true;
@@ -206,16 +233,16 @@ function posChange2(posChange, timeChange, indexTriggered) {
 
     freq3 = new_freq3;
     phidget_rest_timer = millis();
-  } else if (new_freq3 == freq3 && fidgetInit) {
+  } else if (new_freq3 == freq3 && fidgetInit2) {
     if (!reset_color2) {
       timerId = setTimeout(() => {
-        mouseReleased();
+        freqChangePaused(2);
         reset_color2 = true;
         // console.log("------ reset color ------", reset_color);
       }, 1000);
     }
-  } else if (!fidgetInit) {
-    fidgetInit = true;
+  } else if (!fidgetInit2) {
+    fidgetInit2 = true;
     freq3 = new_freq3;
   }
   $('#relChange').val(posChange);
@@ -238,6 +265,88 @@ function sendPhidgetNumberToOsc(hubPort, phidgetNumber) {
     body: JSON.stringify({ hubPort, phidgetNumber })
   })
 }
+
+
+// ##################################################
+// ##############   color change   ##################
+// ##################################################
+
+
+function handleFreqChange(sliderNum, sounds, affectAll) {
+  // Play the corresponding sound
+  if (sounds[0] && !sounds[0].isPlaying()) {
+    sounds[0].loop();
+  }
+
+  // Only change the stroke color of the current slider number
+  setStrokeColor(sliderNum, activeStroke1, false);
+
+  // Set up sounds and delay for activating strokes
+  sounds.forEach((sound, index) => {
+    if (index > 0) {
+      setTimeout(() => {
+        if (!sounds[index].isPlaying()) {
+          sounds[index].loop();
+        }
+        if (!affectAll) {
+          setStrokeColor(sliderNum, activeStroke1, false);
+        }
+      }, index * 200); // 200ms delay between activating strokes
+    }
+  });
+}
+
+function freqChangePaused(rowNumber) {
+  // Stop all sounds and reset stroke colors when mouse is released
+  [sound1, sound2, sound3].forEach((sound, index) => {
+    if (sound.isPlaying()) {
+      sound.stop();
+    }
+    setStrokeColor(rowNumber, normalStroke, true);
+  });
+}
+
+function setStrokeColor(rowNumber, color, affectAll) {
+  if (affectAll) {
+    strokeColor1 = color;
+    strokeColor2 = color;
+    strokeColor3 = color;
+  } else {
+    strokeColor1 = normalStroke;
+    strokeColor2 = normalStroke;
+    strokeColor3 = normalStroke;
+    switch (rowNumber) {
+      case 0:
+        strokeColor1 = color;
+        break;
+      case 1:
+        strokeColor2 = color;
+        break;
+      case 2:
+        strokeColor3 = color;
+        break;
+    }
+  }
+}
+
+function getActiveStroke(sliderNum) {
+  switch (sliderNum) {
+    case 0:
+      return activeStroke1;
+    case 1:
+      return activeStroke2;
+    case 2:
+      return activeStroke3;
+    default:
+      return normalStroke;
+  }
+}
+
+
+// ##################################################
+// ##############    misc code     ##################
+// ##################################################
+
 
 function resetCount() {
   phid.data.elapsedTime = 0;
