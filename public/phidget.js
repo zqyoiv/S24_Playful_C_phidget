@@ -31,16 +31,24 @@ function setupPhidgets() {
 
     ch1.onError = onError;
     ch1.onAttach = onAttach0;
+    ch1.onPositionChange = posChange0;
+    ch1.onDetach = onDetach;
+
     ch2.onError = onError;
     ch2.onAttach = onAttach1;
+    ch2.onPositionChange = posChange1;
+    ch2.onDetach = onDetach;
+
     ch3.onError = onError;
     ch3.onAttach = onAttach2;
+    ch3.onPositionChange = posChange2;
+    ch3.onDetach = onDetach;
 
     // Set Data Interval in; // Set to 100ms for example
     // Set Change Trigger (the minimum change in position to report)
-    ch1.setPositionChangeTrigger(600); // Set to 1 pulse for example
-    ch2.setPositionChangeTrigger(600);
-    ch3.setPositionChangeTrigger(600);
+    // ch1.setPositionChangeTrigger(600); // Set to 1 pulse for example
+    // ch2.setPositionChangeTrigger(600);
+    // ch3.setPositionChangeTrigger(600);
 
     conn.connect().then(function () {
       console.log('connected');
@@ -69,6 +77,9 @@ function setupPhidgets() {
     });
   }
 
+  function onDetach(ch) {
+    console.log(ch.hubPort + " detached");
+  }
   function onAttach0(ch) {
     hubPort = 0;
     console.log(ch + ' attached');
@@ -87,14 +98,6 @@ function setupPhidgets() {
     // $('#Attach').show();
 
     console.log("============= hub port:", ch.getHubPort());
-    phid.onPositionChange = posChange0;
-    // if (hubPort === 0) {
-    //   phid.onPositionChange = posChange0;
-    // } else if (hubPort === 1) {
-    //   phid.onPositionChange = posChange1;
-    // } else if (hubPort === 2) {
-    //   phid.onPositionChange = posChange2;
-    // }
     phid.data.elapsedTime = 0;
     phid.onError = onError;
   }
@@ -117,14 +120,6 @@ function setupPhidgets() {
     // $('#Attach').show();
 
     console.log("============= hub port:", ch.getHubPort());
-    phid1.onPositionChange = posChange1;
-    // if (hubPort === 0) {
-    //   phid.onPositionChange = posChange0;
-    // } else if (hubPort === 1) {
-    //   phid.onPositionChange = posChange1;
-    // } else if (hubPort === 2) {
-    //   phid.onPositionChange = posChange2;
-    // }
     phid1.data.elapsedTime = 0;
     phid1.onError = onError;
   }
@@ -147,7 +142,6 @@ function setupPhidgets() {
     // $('#Attach').show();
 
     console.log("============= hub port:", ch.getHubPort());
-    phid2.onPositionChange = posChange2;
     phid2.data.elapsedTime = 0;
     phid2.onError = onError;
   }
@@ -165,6 +159,7 @@ function positionChange_test(hubPort, posChange, timeChange, indexTriggered) {
 let reset_color0 = false;
 let phidget_rest_timer = 0;
 function posChange0(posChange, timeChange, indexTriggered) {
+  if (posChange < 0.1) return;
   let absolutePosition = encoderPosition + posChange;
   // Make min and max stop value for the phidget, no infinite scroll.
   if (absolutePosition > STEPS_PER_REVOLUTION ||
@@ -217,6 +212,7 @@ function posChange0(posChange, timeChange, indexTriggered) {
 
 let reset_color1 = false;
 function posChange1(posChange, timeChange, indexTriggered) {
+  if (posChange < 0.1) return;
   let absolutePosition = encoderPosition + posChange;
   // Make min and max stop value for the phidget, no infinite scroll.
   if (absolutePosition > STEPS_PER_REVOLUTION ||
@@ -247,7 +243,6 @@ function posChange1(posChange, timeChange, indexTriggered) {
       timerId = setTimeout(() => {
         freqChangePaused(1);
         reset_color1 = true;
-        // console.log("------ reset color ------", reset_color);
       }, 1000);
     }
   } else if (!fidgetInit1) {
@@ -268,6 +263,7 @@ function posChange1(posChange, timeChange, indexTriggered) {
 
 let reset_color2 = false;
 function posChange2(posChange, timeChange, indexTriggered) {
+  if (posChange < 0.1) return;
   let absolutePosition = encoderPosition + posChange;
   // Make min and max stop value for the phidget, no infinite scroll.
   if (absolutePosition > STEPS_PER_REVOLUTION ||
