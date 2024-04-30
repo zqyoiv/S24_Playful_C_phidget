@@ -20,18 +20,21 @@ let freq3 = 60;
 function setupPhidgets() {
     var conn = new phidget22.Connection(8989, 'localhost');
     var ch1 = new phidget22.Encoder();
-    ch1.hubPort = 0;
+    ch1.setHubPort(0);
+    ch1.channel = 0;
     var ch2 = new phidget22.Encoder();
-    ch2.hubPort = 1;
+    ch2.setHubPort(1);
+    ch2.channel = 0;
     var ch3 = new phidget22.Encoder();
-    ch3.hubPort = 2;
+    ch3.setHubPort(2);
+    ch3.channel = 0;
 
     ch1.onError = onError;
-    ch1.onAttach = onAttach;
+    ch1.onAttach = onAttach0;
     ch2.onError = onError;
-    ch2.onAttach = onAttach;
+    ch2.onAttach = onAttach1;
     ch3.onError = onError;
-    ch3.onAttach = onAttach;
+    ch3.onAttach = onAttach2;
 
     // Set Data Interval in; // Set to 100ms for example
     // Set Change Trigger (the minimum change in position to report)
@@ -42,19 +45,22 @@ function setupPhidgets() {
     conn.connect().then(function () {
       console.log('connected');
       ch1.open().then(function (ch) {
-        console.log('channel open');
+        console.log('channel open, deviceSerialNumber:', 
+                    ch1.deviceSerialNumber);
       }).catch(function (err) {
         console.log('failed to open the channel:' + err);
       });
 
       ch2.open().then(function (ch) {
-        console.log('channel open');
+        console.log('channel open, deviceSerialNumber:', 
+                    ch2.deviceSerialNumber);
       }).catch(function (err) {
         console.log('failed to open the channel:' + err);
       });
 
       ch3.open().then(function (ch) {
-        console.log('channel open');
+        console.log('channel open, deviceSerialNumber:', 
+                    ch3.deviceSerialNumber);
       }).catch(function (err) {
         console.log('failed to open the channel:' + err);
       });
@@ -63,7 +69,8 @@ function setupPhidgets() {
     });
   }
 
-  function onAttach(ch) {
+  function onAttach0(ch) {
+    hubPort = 0;
     console.log(ch + ' attached');
     phid = ch;
     setLabel('attachLabel',ch.getDeviceClassName() + ' - ' + ch.getChannelClassName() + ' (Channel ' + ch.getChannel() + ')');
@@ -79,16 +86,70 @@ function setupPhidgets() {
     $('#noAttach').hide();
     // $('#Attach').show();
 
-    hubPort = ch.getHubPort();
-    if (hubPort === 0) {
-      phid.onPositionChange = posChange0;
-    } else if (hubPort === 1) {
-      phid.onPositionChange = posChange1;
-    } else if (hubPort === 2) {
-      phid.onPositionChange = posChange2;
-    }
+    console.log("============= hub port:", ch.getHubPort());
+    phid.onPositionChange = posChange0;
+    // if (hubPort === 0) {
+    //   phid.onPositionChange = posChange0;
+    // } else if (hubPort === 1) {
+    //   phid.onPositionChange = posChange1;
+    // } else if (hubPort === 2) {
+    //   phid.onPositionChange = posChange2;
+    // }
     phid.data.elapsedTime = 0;
     phid.onError = onError;
+  }
+
+  function onAttach1(ch) {
+    hubPort = 1;
+    console.log(ch + ' attached');
+    phid1 = ch;
+    setLabel('attachLabel',ch.getDeviceClassName() + ' - ' + ch.getChannelClassName() + ' (Channel ' + ch.getChannel() + ')');
+    setLabel('serialLabel',ch.getDeviceSerialNumber());
+    setLabel('versionLabel',ch.getDeviceSKU() + ' ver.' + ch.getDeviceVersion());
+    
+    if(ch.getDeviceClass() == phidget22.DeviceClass.VINT) 
+      setLabel('hubPortLabel',ch.getHubPort());
+    else
+      setLabel('hubPortLabel','N/A');
+
+    // $('#encField').show();
+    $('#noAttach').hide();
+    // $('#Attach').show();
+
+    console.log("============= hub port:", ch.getHubPort());
+    phid1.onPositionChange = posChange1;
+    // if (hubPort === 0) {
+    //   phid.onPositionChange = posChange0;
+    // } else if (hubPort === 1) {
+    //   phid.onPositionChange = posChange1;
+    // } else if (hubPort === 2) {
+    //   phid.onPositionChange = posChange2;
+    // }
+    phid1.data.elapsedTime = 0;
+    phid1.onError = onError;
+  }
+
+  function onAttach2(ch) {
+    hubPort = 2;
+    console.log(ch + ' attached');
+    phid2 = ch;
+    setLabel('attachLabel',ch.getDeviceClassName() + ' - ' + ch.getChannelClassName() + ' (Channel ' + ch.getChannel() + ')');
+    setLabel('serialLabel',ch.getDeviceSerialNumber());
+    setLabel('versionLabel',ch.getDeviceSKU() + ' ver.' + ch.getDeviceVersion());
+    
+    if(ch.getDeviceClass() == phidget22.DeviceClass.VINT) 
+      setLabel('hubPortLabel',ch.getHubPort());
+    else
+      setLabel('hubPortLabel','N/A');
+
+    // $('#encField').show();
+    $('#noAttach').hide();
+    // $('#Attach').show();
+
+    console.log("============= hub port:", ch.getHubPort());
+    phid2.onPositionChange = posChange2;
+    phid2.data.elapsedTime = 0;
+    phid2.onError = onError;
   }
 
 // For test use only
