@@ -1,16 +1,3 @@
-const PHIDGET_WAIT_SEC = 20500; // ms, after this time we go back to animetion_begin.
-
-// phidgets variables
-let phidgetsConnected = false;
-let encoderPosition = 0;
-let encoderTimeChange = 0;
-let encoderIndexTriggered = false;
-
-let fidgetInit = false;
-let freq1 = 2;
-let freq2 = 30;
-let freq3 = 60;
-
 let speed1 = 1;
 let speed2 = 1;
 let speed3 = 4;
@@ -155,7 +142,7 @@ function drawBrainWave() {
 
   // Level 3 wave
   beginShape();
-  stroke(strokeColor3);1
+  stroke(strokeColor3);
   strokeWeight(strokeColor3 === activeStroke3 ? 4 : 2);
   for (let x = 0; x < width; x++) {
     angle = map(x, 0, width, 0, TWO_PI);

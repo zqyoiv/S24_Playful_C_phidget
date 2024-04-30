@@ -1,3 +1,16 @@
+const PHIDGET_WAIT_SEC = 20500; // ms, after this time we go back to animetion_begin.
+
+// phidgets variables
+let phidgetsConnected = false;
+let encoderPosition = 0;
+let encoderTimeChange = 0;
+let encoderIndexTriggered = false;
+
+let fidgetInit = false;
+let freq1 = 2;
+let freq2 = 30;
+let freq3 = 60;
+
 function setupPhidgets(hubPort) {
     var conn = new phidget22.Connection(8989, 'localhost');
     var ch = new phidget22.Encoder();
@@ -124,7 +137,7 @@ function posChange1(posChange, timeChange, indexTriggered) {
   }
   encoderPosition = absolutePosition;
 
-  let new_freq2 = map(encoderPosition, 0, STEPS_PER_REVOLUTION, 0.5, 4);
+  let new_freq2 = map(encoderPosition, 0, STEPS_PER_REVOLUTION, 20, 40);
   if (new_freq2 != freq2 && fidgetInit) {
     console.log("1 Frequency updated to: " + new_freq2);
     sendPhidgetNumberToOsc(hubPort, encoderPosition);
@@ -175,7 +188,7 @@ function posChange2(posChange, timeChange, indexTriggered) {
   }
   encoderPosition = absolutePosition;
 
-  let new_freq3 = map(encoderPosition, 0, STEPS_PER_REVOLUTION, 0.5, 4);
+  let new_freq3 = map(encoderPosition, 0, STEPS_PER_REVOLUTION, 50, 80);
 
   if (new_freq3 != freq3 && fidgetInit) {
     console.log("2 Frequency updated to: " + new_freq3);
