@@ -158,22 +158,22 @@ function positionChange_test(hubPort, posChange, timeChange, indexTriggered) {
 }
 
 let reset_color0 = false;
+let encoderPosition0 = 0;
 let phidget_rest_timer = 0;
 function posChange0(posChange, timeChange, indexTriggered) {
-  if (posChange < 0.1) return;
-  let absolutePosition = encoderPosition + posChange;
+  if (Math.abs(posChange) < 0.1) return;
+  let absolutePosition = (encoderPosition0 + posChange);
   // Make min and max stop value for the phidget, no infinite scroll.
   if (absolutePosition > STEPS_PER_REVOLUTION ||
       absolutePosition < 0) {
     return;
   }
-  encoderPosition = absolutePosition;
+  encoderPosition0 = absolutePosition;
 
-  let new_freq1 = map(encoderPosition, 0, STEPS_PER_REVOLUTION, 0.5, 4);
+  let new_freq1 = map(encoderPosition0, 0, STEPS_PER_REVOLUTION, 0.5, 4);
 
   if (new_freq1 != freq1 && fidgetInit0) {
-    console.log("0 Frequency updated to: " + new_freq1);
-    sendPhidgetNumberToOsc(hubPort, encoderPosition);
+    sendPhidgetNumberToOsc(0, encoderPosition0);
     reset_color0 = false;
     if (timerId) {
       clearTimeout(timerId);
@@ -199,33 +199,22 @@ function posChange0(posChange, timeChange, indexTriggered) {
     fidgetInit0 = true;
     freq1 = new_freq1;
   }
-  // positionChange(0, posChange, timeChange, indexTriggered);
-  $('#relChange').val(posChange);
-  $('#timeChange').val(timeChange / 1000000);
-  $('#position').val(encoderPosition);
-  $('#time').val(this.data.elapsedTime / 1000000);
-  $('#speed').val(this.data.position / (this.data.elapsedTime / 1000000));
-
-  if (phid.getDeviceID() == phidget22.DeviceID.PN_1047) {
-    $('#index').val(this.data.indexPosition);
-  }
 }
 
 let reset_color1 = false;
+let encoderPosition1 = 0;
 function posChange1(posChange, timeChange, indexTriggered) {
-  if (posChange < 0.1) return;
-  let absolutePosition = encoderPosition + posChange;
+  if (Math.abs(posChange) < 0.1) return;
+  let absolutePosition = encoderPosition1 + posChange;
   // Make min and max stop value for the phidget, no infinite scroll.
   if (absolutePosition > STEPS_PER_REVOLUTION ||
       absolutePosition < 0) {
     return;
   }
-  encoderPosition = absolutePosition;
-
-  let new_freq2 = map(encoderPosition, 0, STEPS_PER_REVOLUTION, 30, 40);
+  encoderPosition1 = absolutePosition;
+  let new_freq2 = map(encoderPosition1, 0, STEPS_PER_REVOLUTION, 30, 40);
   if (new_freq2 != freq2 && fidgetInit1) {
-    console.log("1 Frequency updated to: " + new_freq2);
-    sendPhidgetNumberToOsc(hubPort, encoderPosition);
+    sendPhidgetNumberToOsc(1, encoderPosition1);
     reset_color1 = false;
     if (timerId) {
       clearTimeout(timerId);
@@ -250,34 +239,25 @@ function posChange1(posChange, timeChange, indexTriggered) {
     fidgetInit1 = true;
     freq2 = new_freq2;
   }
-  // positionChange(1, posChange, timeChange, indexTriggered);
-  $('#relChange').val(posChange);
-  $('#timeChange').val(timeChange / 1000000);
-  $('#position').val(encoderPosition);
-  $('#time').val(this.data.elapsedTime / 1000000);
-  $('#speed').val(this.data.position / (this.data.elapsedTime / 1000000));
-
-  if (phid.getDeviceID() == phidget22.DeviceID.PN_1047) {
-    $('#index').val(this.data.indexPosition);
-  }
 }
 
 let reset_color2 = false;
+let encoderPosition2 = 0;
 function posChange2(posChange, timeChange, indexTriggered) {
-  if (posChange < 0.1) return;
-  let absolutePosition = encoderPosition + posChange;
+  if (Math.abs(posChange) < 0.1) return;
+  let absolutePosition = (encoderPosition2 + posChange);
   // Make min and max stop value for the phidget, no infinite scroll.
   if (absolutePosition > STEPS_PER_REVOLUTION ||
       absolutePosition < 0) {
     return;
   }
-  encoderPosition = absolutePosition;
+  encoderPosition2 = absolutePosition;
 
-  let new_freq3 = map(encoderPosition, 0, STEPS_PER_REVOLUTION, 60, 70);
+  let new_freq3 = map(encoderPosition2, 0, STEPS_PER_REVOLUTION, 50, 70);
 
   if (new_freq3 != freq3 && fidgetInit2) {
-    console.log("2 Frequency updated to: " + new_freq3);
-    sendPhidgetNumberToOsc(hubPort, encoderPosition);
+    // console.log("2 Frequency updated to: " + new_freq3);
+    sendPhidgetNumberToOsc(2, encoderPosition2);
     reset_color2 = false;
     if (timerId) {
       clearTimeout(timerId);
@@ -302,15 +282,6 @@ function posChange2(posChange, timeChange, indexTriggered) {
   } else if (!fidgetInit2) {
     fidgetInit2 = true;
     freq3 = new_freq3;
-  }
-  $('#relChange').val(posChange);
-  $('#timeChange').val(timeChange / 1000000);
-  $('#position').val(encoderPosition);
-  $('#time').val(this.data.elapsedTime / 1000000);
-  $('#speed').val(this.data.position / (this.data.elapsedTime / 1000000));
-
-  if (phid.getDeviceID() == phidget22.DeviceID.PN_1047) {
-    $('#index').val(this.data.indexPosition);
   }
 }
 
