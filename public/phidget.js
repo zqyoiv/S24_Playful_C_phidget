@@ -163,11 +163,6 @@ let phidget_rest_timer = 0;
 function posChange0(posChange, timeChange, indexTriggered) {
   if (Math.abs(posChange) < 0.1) return;
   let absolutePosition = (encoderPosition0 + posChange);
-  // Make min and max stop value for the phidget, no infinite scroll.
-  if (absolutePosition > STEPS_PER_REVOLUTION ||
-      absolutePosition < 0) {
-    return;
-  }
   encoderPosition0 = absolutePosition;
 
   let new_freq1 = map(encoderPosition0, 0, STEPS_PER_REVOLUTION, 0.5, 4);
@@ -206,11 +201,6 @@ let encoderPosition1 = 0;
 function posChange1(posChange, timeChange, indexTriggered) {
   if (Math.abs(posChange) < 0.1) return;
   let absolutePosition = encoderPosition1 + posChange;
-  // Make min and max stop value for the phidget, no infinite scroll.
-  if (absolutePosition > STEPS_PER_REVOLUTION ||
-      absolutePosition < 0) {
-    return;
-  }
   encoderPosition1 = absolutePosition;
   let new_freq2 = map(encoderPosition1, 0, STEPS_PER_REVOLUTION, 30, 40);
   if (new_freq2 != freq2 && fidgetInit1) {
@@ -246,11 +236,6 @@ let encoderPosition2 = 0;
 function posChange2(posChange, timeChange, indexTriggered) {
   if (Math.abs(posChange) < 0.1) return;
   let absolutePosition = (encoderPosition2 + posChange);
-  // Make min and max stop value for the phidget, no infinite scroll.
-  if (absolutePosition > STEPS_PER_REVOLUTION ||
-      absolutePosition < 0) {
-    return;
-  }
   encoderPosition2 = absolutePosition;
 
   let new_freq3 = map(encoderPosition2, 0, STEPS_PER_REVOLUTION, 50, 70);
