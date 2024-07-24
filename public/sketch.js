@@ -26,13 +26,23 @@ let playStartAnimation = true;
 let playTransitAnimation = false;
 let animeBegin, animeTransit;
 
+const socket = io();
+socket.on('connect', function () {
+  console.log('Connected to Socket server');
+});
+socket.on('end_game', () => {
+  console.log('end_game received'); 
+  playEndGameVideo();
+});
+
+
+
 function preload() {
   // Preload sound files
   soundFormats('mp3');
   sound1 = loadSound('sound/1.mp3');
   sound2 = loadSound('sound/2.mp3');
   sound3 = loadSound('sound/3.mp3');
-  sounds = [sound1];
   animeBegin = createVideo('asset/begin_p.mp4');
   animeTransit = createVideo('asset/transit_p.mp4');
 }
