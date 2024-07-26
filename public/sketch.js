@@ -1,3 +1,5 @@
+let SLIDER_MODE = true;
+
 let speed1 = 1;
 let speed2 = 1;
 let speed3 = 4;
@@ -8,6 +10,7 @@ let ampMultiplier2 = 30;
 let ampMultiplier3 = 40;
 
 let freqSlider1, freqSlider2, freqSlider3;
+let oldFreq1Value, oldFreq2Value, oldFreq3Value;
 
 // 假设编码器每圈的步数
 const STEPS_PER_REVOLUTION = 1024; // 替换为你的编码器的实际步数
@@ -74,7 +77,11 @@ function setup() {
   strokeColor2 = normalStroke;
   strokeColor3 = normalStroke;
 
-  setupPhidgets();
+  if (SLIDER_MODE) {
+    setUpFrequencySliders();
+  } else {
+    setupPhidgets();
+  }
 
   animeTransit.onended(endAnimation);
 }
@@ -82,6 +89,7 @@ function setup() {
 function keyPressed() {
   if (key === 'q' || key === 'Q') {
     playStartAnimation = true;
+    playTransitAnimation = false;
     animeBegin.loop();
   }
 
@@ -114,6 +122,10 @@ function draw() {
     return;
   }
 
+  if (SLIDER_MODE) {
+    detectSliderValueChange();
+    displaySliders();
+  }
   drawBrainWave();
 }
 
@@ -162,16 +174,64 @@ function drawBrainWave() {
 // Utility Functions
 
 function setUpFrequencySliders() {
-  freqSlider1 = createSlider(1, 2.5, 1.5, 0.5);
-  freqSlider1.position(10, 100);
-  freqSlider1.mousePressed(() => handleFreqChange(1, [sound1], true));
+  oldFreq1Value = 1.5;
+  oldFreq2Value = 30;
+  oldFreq3Value = 60;
+
+  freqSlider1 = createSlider(0.5, 4, 1.5, 0.1);
+
+  let sliderX = (width - freqSlider1.width) / 2;
+  let sliderY = height - freqSlider1.height * 3 - 40; 
+
+  freqSlider1.position(sliderX, sliderY);
 
   freqSlider2 = createSlider(20, 40, 30, 5);
-  freqSlider2.position(10, 120);
-  freqSlider2.mousePressed(() => handleFreqChange(2, [sound2], false));
+  freqSlider2.position(sliderX, sliderY + 20);
 
   freqSlider3 = createSlider(50, 80, 60, 5);
-  freqSlider3.position(10, 140);
-  freqSlider3.mousePressed(() => handleFreqChange(3, [sound3], false));
+  freqSlider3.position(sliderX, sliderY + 40);
+
+  displaySliders();
 }
 
+function detectSliderValueChange() {
+  if (freqSlider1.value() != oldFreq1Value) {
+    handleFreqChangeSldier(0, [], false);
+    oldFreq1Value = freqSlider1.value();
+  }
+  if (freqSlider2.value() != oldFreq2Value) {
+    handleFreqChangeSldier(1, [], false);
+    oldFreq2Value = freqSlider2.value();
+  }
+  if (freqSlider3.value() != oldFreq3Value) {
+    handleFreqChangeSldier(2, [], false);
+    oldFreq3Value = freqSlider3.value();
+  }
+}
+
+function displaySliders() {
+  if (playTransitAnimation || playStartAnimation) {
+    freqSlider1.hide();
+    freqSlider2.hide();
+    freqSlider3.hide();
+  } else {
+    freqSlider1.show();
+    freqSlider2.show();
+    freqSlider3.show();
+  }
+}
+
+function handleFreqChangeSldier(sliderNum, sounds, affectAll) {
+  switch (sliderNum) {
+    case 0:
+      freq1 = map(freqSlider1.value(), 1, 2.5, 0.5, 4);
+      break;
+    case 1:
+      freq2 = map(freqSlider2.value(), 20, 40, 30, 40);
+      break;
+    case 2:
+      freq3 = map(freqSlider3.value(), 50, 80, 50, 70);
+      break;
+  }
+  handleFreqChange(sliderNum, sounds, affectAll);
+}
